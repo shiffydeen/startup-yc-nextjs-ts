@@ -1,22 +1,30 @@
 import Image from "next/image";
 import SearchForm from "../../components/SearchForm";
-import StartUpCard from "@/components/StartUpCard";
+import StartUpCard, { StartUpTypeCard } from "@/components/StartUpCard";
+import { client } from "@/sanity/lib/client";
+import { STARTUPS_QUERY } from "@/sanity/lib/queries";
+
 
 export default async function Home({searchParams}: {
   searchParams: Promise<{query ?: string}>
 }) {
 
   const query = (await searchParams).query;
-  const posts = [{
-    _createdAt: new Date(),
-    views: 55,
-    author: {_id: 1, name: 'Sheriff'},
-    _id: 1,
-    description: 'This is a description.',
-    image: 'https://unsplash.com/photos/a-woman-standing-in-front-of-a-mirror-brushing-her-teeth-vuwDHNmwvHQ',
-    category: 'Robots',
-    title: "We Robots"
-  }]
+
+  const posts = await client.fetch(STARTUPS_QUERY);
+
+  // console.log(JSON.stringify(posts, null, 2));
+
+  // const posts = [{
+  //   _createdAt: new Date(),
+  //   views: 55,
+  //   author: {_id: 1, name: 'Sheriff'},
+  //   _id: 1,
+  //   description: 'This is a description.',
+  //   image: 'https://unsplash.com/photos/a-woman-standing-in-front-of-a-mirror-brushing-her-teeth-vuwDHNmwvHQ',
+  //   category: 'Robots',
+  //   title: "We Robots"
+  // }]
 
   return (
     <>
@@ -31,7 +39,7 @@ export default async function Home({searchParams}: {
       </p>
       <ul className="mt-7 card_grid">
         {posts?.length > 0 ? (
-          posts.map((post: StartUpCardType, index: number) => (
+          posts.map((post: StartUpTypeCard, index: number) => (
             <StartUpCard key={post?._id} post={post}/>
           ))) : (
             <p className="no-results">No startups found</p>
